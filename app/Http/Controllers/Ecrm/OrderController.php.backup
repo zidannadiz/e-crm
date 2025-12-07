@@ -1,0 +1,262 @@
+<?php
+
+namespace App\Http\Controllers\Ecrm;
+
+use App\Http\Controllers\Controller;
+use App\Models\Ecrm\Client;
+use App\Models\Ecrm\Order;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
+class OrderController extends Controller
+{
+    public function index(Request $request)
+    {
+        $query = Order::with(['client', 'user']);
+
+        if (Auth::user()->role === 'client') {
+            $query->where('user_id', Auth::id());
+        }
+
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('nomor_order', 'like', '%' . $search . '%')
+                  ->orWhere('deskripsi', 'like', '%' . $search . '%')
+                  ->orWhereHas('client', function($q) use ($search) {
+                      $q->where('nama', 'like', '%' . $search . '%');
+                  });
+            });
+        }
+
+        if ($request->has('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $orders = $query->latest()->paginate(15);
+        $clients = Client::where('status', 'aktif')->get();
+
+        return view('ecrm.orders.index', compact('orders', 'clients'));
+    }
+
+    public function create()
+    {
+        $user = Auth::user();
+        
+        // Ensure user has role, default to 'client' if null
+        if (!$user->role) {
+            $user->update(['role' => 'client']);
+            $user->refresh();
+        }
+        
+        // Check if user is client (middleware should handle this, but double check)
+        if ($user->role !== 'client') {
+            abort(403, 'Hanya client yang dapat membuat pesanan. Role Anda: ' . ($user->role ?? 'none'));
+        }
+
+        $client = $user->client;
+        
+        // If client doesn't exist, create one automatically
+        if (!$client) {
+            $client = Client::create([
+                'nama' => $user->name,
+                'email' => $user->email,
+                'tipe' => 'individu',
+                'status' => 'aktif',
+            ]);
+            
+            // Link client to user
+            $user->update(['client_id' => $client->id]);
+        }
+
+        return view('ecrm.orders.create', compact('client'));
+    }
+
+    public function store(Request $request)
+    {
+        $user = Auth::user();
+        
+        // Ensure user has role, default to 'client' if null
+        if (!$user->role) {
+            $user->update(['role' => 'client']);
+            $user->refresh();
+        }
+        
+        if ($user->role !== 'client') {
+            abort(403, 'Hanya client yang dapat membuat pesanan. Role Anda: ' . ($user->role ?? 'none'));
+        }
+
+        $client = $user->client;
+        
+        // If client doesn't exist, create one automatically
+        if (!$client) {
+            $client = Client::create([
+                'nama' => $user->name,
+                'email' => $user->email,
+                'tipe' => 'individu',
+                'status' => 'aktif',
+            ]);
+            
+            // Link client to user
+            $user->update(['client_id' => $client->id]);
+        }
+
+        $validated = $request->validate([
+            'jenis_desain' => 'required|in:logo,branding,web_design,ui_ux,print_design,packaging,social_media,seminar,lainnya',
+            'deskripsi' => 'required|string',
+            'kebutuhan' => 'nullable|string',
+            'deadline' => 'nullable|date',
+        ]);
+
+        $validated['client_id'] = $client->id;
+        $validated['user_id'] = $user->id;
+        $validated['status'] = 'pending';
+
+        $order = Order::create($validated);
+
+        return redirect()->route('ecrm.orders.show', $order)
+            ->with('success', 'Pesanan berhasil dibuat. Admin akan meninjau pesanan Anda.');
+    }
+
+    public function show(Order $order)
+    {
+        $user = Auth::user();
+        
+        // Check access - client can only see their own orders, admin can see all
+        if ($user->role === 'client' && $order->user_id !== $user->id) {
+            abort(403, 'Anda tidak memiliki akses ke order ini');
+        }
+        
+        // Admin can access all orders, no restriction needed
+
+        $order->load(['client', 'user', 'chatMessages.user', 'invoices']);
+        $unreadCount = $order->chatMessages()
+            ->where('user_id', '!=', Auth::id())
+            ->where('is_read', false)
+            ->count();
+
+        return view('ecrm.orders.show', compact('order', 'unreadCount'));
+    }
+
+    public function myOrders()
+    {
+        $orders = Order::where('user_id', Auth::id())
+            ->with(['client'])
+            ->latest()
+            ->paginate(15);
+
+        return view('ecrm.orders.my-orders', compact('orders'));
+    }
+
+    public function approve(Order $order)
+    {
+        $order->update([
+            'status' => 'approved',
+            'catatan_admin' => request('catatan') ?? $order->catatan_admin,
+        ]);
+
+        return redirect()->back()
+            ->with('success', 'Pesanan berhasil disetujui');
+    }
+
+    public function reject(Order $order)
+    {
+        $order->update([
+            'status' => 'cancelled',
+            'catatan_admin' => request('catatan') ?? $order->catatan_admin,
+        ]);
+
+        return redirect()->back()
+            ->with('success', 'Pesanan ditolak');
+    }
+
+    public function edit(Order $order)
+    {
+        $user = Auth::user();
+        
+        // Client can only edit their own orders
+        if ($user->role === 'client' && $order->user_id !== $user->id) {
+            abort(403, 'Anda tidak memiliki akses ke order ini');
+        }
+        
+        // Client can only edit if status is pending
+        if ($user->role === 'client' && $order->status !== 'pending') {
+            return redirect()->route('ecrm.orders.show', $order)
+                ->with('error', 'Pesanan hanya dapat diedit jika status masih pending');
+        }
+        
+        $client = $order->client;
+        
+        return view('ecrm.orders.edit', compact('order', 'client'));
+    }
+
+    public function update(Request $request, Order $order)
+    {
+        $user = Auth::user();
+        
+        // Client can only update their own orders
+        if ($user->role === 'client') {
+            if ($order->user_id !== $user->id) {
+                abort(403, 'Anda tidak memiliki akses ke order ini');
+            }
+            
+            // Client can only update if status is pending
+            if ($order->status !== 'pending') {
+                return redirect()->back()
+                    ->with('error', 'Pesanan hanya dapat diubah jika status masih pending');
+            }
+            
+            // Client can only update certain fields
+            $validated = $request->validate([
+                'jenis_desain' => 'required|in:logo,branding,web_design,ui_ux,print_design,packaging,social_media,seminar,lainnya',
+                'deskripsi' => 'required|string',
+                'kebutuhan' => 'nullable|string',
+                'deadline' => 'nullable|date',
+            ]);
+        } else {
+            // Admin can update all fields
+            $validated = $request->validate([
+                'status' => 'required|in:pending,approved,in_progress,review,completed,cancelled',
+                'budget' => 'nullable|numeric|min:0',
+                'deadline' => 'nullable|date',
+                'catatan_admin' => 'nullable|string',
+            ]);
+        }
+
+        $order->update($validated);
+
+        return redirect()->route('ecrm.orders.show', $order)
+            ->with('success', 'Pesanan berhasil diperbarui');
+    }
+
+    public function destroy(Order $order)
+    {
+        $user = Auth::user();
+        
+        // Client can only delete their own orders
+        if ($user->role === 'client') {
+            if ($order->user_id !== $user->id) {
+                abort(403, 'Anda tidak memiliki akses ke order ini');
+            }
+            
+            // Client can only delete if status is pending
+            if ($order->status !== 'pending') {
+                return redirect()->back()
+                    ->with('error', 'Pesanan hanya dapat dihapus jika status masih pending');
+            }
+        }
+        
+        // Check if order has invoices
+        if ($order->invoices()->count() > 0) {
+            return redirect()->back()
+                ->with('error', 'Pesanan tidak dapat dihapus karena sudah memiliki invoice');
+        }
+        
+        $order->delete();
+
+        return redirect()->route('ecrm.orders.my')
+            ->with('success', 'Pesanan berhasil dihapus');
+    }
+}
+
+
