@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex justify-between items-center mb-6">
+    <div class="flex justify-between items-center mb-6 animate-fade-in">
         <div>
             <h1 class="text-3xl font-bold">Invoices Saya</h1>
             <p class="text-gray-600 mt-1">Daftar tagihan untuk pesanan Anda</p>
@@ -17,11 +17,11 @@
         </div>
     @endif
 
-    <div class="bg-white rounded-lg shadow mb-4 p-4">
+    <div class="bg-white rounded-lg shadow mb-4 p-4 animate-slide-up">
         <form method="GET" class="flex gap-4">
-            <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nomor invoice atau nomor order..." class="flex-1 border rounded px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nomor invoice atau nomor order..." class="flex-1 border rounded px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 focus:scale-105">
             <div class="relative inline-block" style="min-width: 180px;">
-                <select name="status" class="w-full appearance-none bg-white border-2 border-gray-300 rounded-lg pl-4 pr-10 py-2.5 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-400 transition-colors duration-200 cursor-pointer shadow-sm" style="-webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: none;">
+                <select name="status" class="w-full appearance-none bg-white border-2 border-gray-300 rounded-lg pl-4 pr-10 py-2.5 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-400 transition-all duration-200 cursor-pointer shadow-sm focus:scale-105" style="-webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: none;">
                     <option value="">Semua Status</option>
                     <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>Draft</option>
                     <option value="sent" {{ request('status') == 'sent' ? 'selected' : '' }}>Terkirim</option>
@@ -34,13 +34,13 @@
                     </svg>
                 </div>
             </div>
-            <button type="submit" class="bg-gray-600 text-white px-6 py-2 rounded hover:bg-gray-700 transition-colors">Cari</button>
+            <button type="submit" class="bg-gray-600 text-white px-6 py-2 rounded hover:bg-gray-700 transition-all duration-200 hover:scale-105 active:scale-95 ripple">Cari</button>
         </form>
     </div>
 
     <div class="space-y-4">
-        @forelse($invoices as $invoice)
-            <div class="bg-white rounded-lg shadow hover:shadow-md transition-shadow">
+        @forelse($invoices as $index => $invoice)
+            <div class="bg-white rounded-lg shadow hover:shadow-md transition-all duration-300 animate-slide-up hover:scale-[1.02]" style="animation-delay: {{ $index * 0.1 }}s; opacity: 0; animation-fill-mode: forwards;">
                 <div class="p-6">
                     <div class="flex justify-between items-start mb-4">
                         <div class="flex-1">
@@ -67,7 +67,7 @@
                         </div>
                     </div>
 
-                    <!-- Order Details -->
+                    <!-- Detail Pesanan -->
                     <div class="bg-gray-50 rounded-lg p-4 mb-4">
                         <h4 class="font-semibold text-gray-900 mb-2 flex items-center">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -93,7 +93,7 @@
                         </div>
                     </div>
 
-                    <!-- Invoice Details -->
+                    <!-- Detail Faktur -->
                     <div class="grid grid-cols-2 gap-4 mb-4">
                         <div>
                             <p class="text-sm text-gray-600">Jatuh Tempo</p>

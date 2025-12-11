@@ -4,35 +4,35 @@
 
 @section('content')
 <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-    <h1 class="text-3xl font-bold mb-6">Tambah Balasan Cepat</h1>
+    <h1 class="text-3xl font-bold mb-6 animate-fade-in">Tambah Balasan Cepat</h1>
 
-    <div class="bg-white rounded-lg shadow p-6">
+    <div class="bg-white rounded-lg shadow p-6 animate-slide-up">
         <form action="{{ route('ecrm.quick-replies.store') }}" method="POST">
             @csrf
 
             <div class="space-y-6">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Pertanyaan *</label>
-                    <input type="text" name="pertanyaan" value="{{ old('pertanyaan') }}" required class="w-full border rounded px-4 py-2" placeholder="Contoh: Berapa harga desain logo?">
+                    <input type="text" name="pertanyaan" value="{{ old('pertanyaan') }}" required class="w-full border rounded px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 focus:scale-105" placeholder="Contoh: Berapa harga desain logo?">
                     @error('pertanyaan') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Jawaban *</label>
-                    <textarea name="jawaban" rows="5" required class="w-full border rounded px-4 py-2" placeholder="Jawaban yang akan muncul ketika client klik pertanyaan ini..."></textarea>
+                    <textarea name="jawaban" rows="5" required class="w-full border rounded px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 focus:scale-105" placeholder="Jawaban yang akan muncul ketika klien klik pertanyaan ini..."></textarea>
                     @error('jawaban') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Kategori</label>
-                    <input type="text" name="kategori" value="{{ old('kategori') }}" class="w-full border rounded px-4 py-2" placeholder="Contoh: Harga, Proses, Timeline">
+                    <input type="text" name="kategori" value="{{ old('kategori') }}" class="w-full border rounded px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 focus:scale-105" placeholder="Contoh: Harga, Proses, Timeline">
                     @error('kategori') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Urutan</label>
-                        <input type="number" name="order" value="{{ old('order', 0) }}" class="w-full border rounded px-4 py-2">
+                        <input type="number" name="order" value="{{ old('order', 0) }}" class="w-full border rounded px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 focus:scale-105">
                         @error('order') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
                 </div>
@@ -53,7 +53,7 @@
             </div>
 
             <div class="mt-6 flex gap-4">
-                <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
+                <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition-all duration-200 hover:scale-105 active:scale-95 ripple">
                     Simpan
                 </button>
                 <a href="{{ route('ecrm.quick-replies.index') }}" class="bg-gray-300 text-gray-700 px-6 py-2 rounded hover:bg-gray-400">

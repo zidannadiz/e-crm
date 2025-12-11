@@ -36,9 +36,6 @@
                         <x-nav-link :href="route('ecrm.invoices.index')" :active="request()->routeIs('ecrm.invoices.*')">
                             {{ __('Faktur') }}
                         </x-nav-link>
-                        <x-nav-link :href="route('ecrm.payments.index')" :active="request()->routeIs('ecrm.payments.*')">
-                            {{ __('Pembayaran') }}
-                        </x-nav-link>
                     @elseif(Auth::user()->role === 'cs')
                         <x-nav-link :href="route('ecrm.orders.index')" :active="request()->routeIs('ecrm.orders.*')">
                             {{ __('Pesanan') }}
@@ -51,12 +48,6 @@
                         </x-nav-link>
                         <x-nav-link :href="route('ecrm.invoices.index')" :active="request()->routeIs('ecrm.invoices.*')">
                             {{ __('Faktur') }}
-                        </x-nav-link>
-                        <x-nav-link :href="route('ecrm.payments.index')" :active="request()->routeIs('ecrm.payments.*')">
-                            {{ __('Pembayaran') }}
-                        </x-nav-link>
-                        <x-nav-link :href="route('ecrm.quick-replies.index')" :active="request()->routeIs('ecrm.quick-replies.*')">
-                            {{ __('Balasan Cepat') }}
                         </x-nav-link>
                     @else
                         <x-nav-link :href="route('ecrm.orders.my')" :active="request()->routeIs('ecrm.orders.*')">
@@ -145,9 +136,6 @@
                 <x-responsive-nav-link :href="route('ecrm.invoices.index')" :active="request()->routeIs('ecrm.invoices.*')">
                     {{ __('Faktur') }}
                 </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('ecrm.payments.index')" :active="request()->routeIs('ecrm.payments.*')">
-                    {{ __('Pembayaran') }}
-                </x-responsive-nav-link>
             @elseif(Auth::user()->role === 'cs')
                 <x-responsive-nav-link :href="route('ecrm.orders.index')" :active="request()->routeIs('ecrm.orders.*')">
                     {{ __('Pesanan') }}
@@ -160,12 +148,6 @@
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('ecrm.invoices.index')" :active="request()->routeIs('ecrm.invoices.*')">
                     {{ __('Faktur') }}
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('ecrm.payments.index')" :active="request()->routeIs('ecrm.payments.*')">
-                    {{ __('Pembayaran') }}
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('ecrm.quick-replies.index')" :active="request()->routeIs('ecrm.quick-replies.*')">
-                    {{ __('Balasan Cepat') }}
                 </x-responsive-nav-link>
             @else
                 <x-responsive-nav-link :href="route('ecrm.orders.my')" :active="request()->routeIs('ecrm.orders.*')">

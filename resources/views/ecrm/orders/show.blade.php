@@ -4,26 +4,26 @@
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex justify-between items-center mb-6">
+    <div class="flex justify-between items-center mb-6 animate-fade-in">
         <h1 class="text-3xl font-bold">Detail Pesanan</h1>
         <div class="flex gap-2">
-            <a href="{{ route('ecrm.chat.index', $order) }}" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+            <a href="{{ route('ecrm.chat.index', $order) }}" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-all duration-200 hover:scale-105 active:scale-95 ripple">
                 💬 Pesan
                 @if($unreadCount > 0)
-                    <span class="ml-2 bg-red-500 text-white text-xs px-2 py-1 rounded">{{ $unreadCount }}</span>
+                    <span class="ml-2 bg-red-500 text-white text-xs px-2 py-1 rounded animate-pulse-slow">{{ $unreadCount }}</span>
                 @endif
             </a>
             @if(Auth::user()->role === 'admin')
-            <a href="{{ route('ecrm.orders.edit', $order) }}" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 flex items-center gap-2">
+            <a href="{{ route('ecrm.orders.edit', $order) }}" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 flex items-center gap-2 transition-all duration-200 hover:scale-105 active:scale-95 ripple">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                 </svg>
-                Edit
+                Ubah
             </a>
             @if($order->status === 'pending')
             <button type="button" 
                     onclick="openApproveModal('{{ route('ecrm.orders.approve', $order) }}', '{{ $order->nomor_order }}')"
-                    class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                    class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-all duration-200 hover:scale-105 active:scale-95 ripple">
                 Setujui
             </button>
             @endif
@@ -33,7 +33,7 @@
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div class="md:col-span-2">
-            <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <div class="bg-white rounded-lg shadow p-6 mb-6 animate-slide-up hover:shadow-lg transition-all duration-300">
                 <h2 class="text-xl font-bold mb-4">Informasi Pesanan</h2>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
@@ -49,16 +49,6 @@
                         <p class="font-semibold">{{ ucfirst(str_replace('_', ' ', $order->jenis_desain)) }}</p>
                     </div>
                     <div>
-                        <label class="text-sm text-gray-500">Status Order</label>
-                        <span class="px-2 py-1 text-xs rounded {{ 
-                            $order->status === 'completed' ? 'bg-green-100 text-green-800' : 
-                            ($order->status === 'in_progress' ? 'bg-blue-100 text-blue-800' : 
-                            ($order->status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800')) 
-                        }}">
-                            {{ ucfirst(str_replace('_', ' ', $order->status)) }}
-                        </span>
-                    </div>
-                    <div>
                         <label class="text-sm text-gray-500">Status Produk</label>
                         <div class="mt-1">
                             @php
@@ -70,7 +60,7 @@
                                 ];
                                 $produkStatusLabel = $statusLabels[$produkStatus] ?? 'Pending';
                             @endphp
-                            <span class="px-4 py-2 text-base font-bold rounded-lg {{ 
+                            <span class="px-4 py-2 text-base font-bold rounded-lg transition-all duration-200 hover:scale-110 {{ 
                                 $produkStatus === 'selesai' ? 'bg-green-100 text-green-800 border-2 border-green-300' : 
                                 ($produkStatus === 'proses' ? 'bg-blue-100 text-blue-800 border-2 border-blue-300' : 
                                 'bg-yellow-100 text-yellow-800 border-2 border-yellow-300') 
@@ -113,42 +103,27 @@
                 </div>
             </div>
 
-            {{-- Update Status Section (CS & Admin) --}}
+            {{-- Bagian Perbarui Status (CS & Admin) --}}
             @if(Auth::user()->role === 'cs' || Auth::user()->role === 'admin')
             <div class="bg-white rounded-lg shadow p-6 mb-6">
-                <h2 class="text-xl font-bold mb-4">Update Status Pesanan</h2>
+                <h2 class="text-xl font-bold mb-4">Perbarui Status Produk</h2>
                 <form action="{{ route('ecrm.orders.update-status', $order) }}" method="POST" class="space-y-4">
                     @csrf
                     @method('PATCH')
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Status Pesanan</label>
-                            <select name="status" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                <option value="pending" {{ $order->status == 'pending' ? 'selected' : '' }}>Pending</option>
-                                <option value="approved" {{ $order->status == 'approved' ? 'selected' : '' }}>Approved</option>
-                                <option value="in_progress" {{ $order->status == 'in_progress' ? 'selected' : '' }}>In Progress</option>
-                                <option value="review" {{ $order->status == 'review' ? 'selected' : '' }}>Review</option>
-                                <option value="completed" {{ $order->status == 'completed' ? 'selected' : '' }}>Completed</option>
-                                <option value="cancelled" {{ $order->status == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
-                            </select>
-                        </div>
-                        @if(Auth::user()->role === 'admin')
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Status Produk</label>
-                            <select name="produk_status" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                <option value="pending" {{ ($order->produk_status ?? 'pending') == 'pending' ? 'selected' : '' }}>Pending</option>
-                                <option value="proses" {{ ($order->produk_status ?? 'pending') == 'proses' ? 'selected' : '' }}>Proses</option>
-                                <option value="selesai" {{ ($order->produk_status ?? 'pending') == 'selesai' ? 'selected' : '' }}>Selesai</option>
-                            </select>
-                        </div>
-                        @endif
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Status Produk</label>
+                        <select name="produk_status" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="pending" {{ ($order->produk_status ?? 'pending') == 'pending' ? 'selected' : '' }}>Pending</option>
+                            <option value="proses" {{ ($order->produk_status ?? 'pending') == 'proses' ? 'selected' : '' }}>Proses</option>
+                            <option value="selesai" {{ ($order->produk_status ?? 'pending') == 'selesai' ? 'selected' : '' }}>Selesai</option>
+                        </select>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Catatan</label>
                         <textarea name="catatan_admin" rows="3" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Tambahkan catatan untuk pesanan ini...">{{ $order->catatan_admin }}</textarea>
                     </div>
                     <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium">
-                        Update Status
+                        Perbarui Status
                     </button>
                 </form>
             </div>
@@ -301,7 +276,7 @@
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                         </svg>
-                        Edit Pesanan
+                        Ubah Pesanan
                     </a>
                     <form action="{{ route('ecrm.orders.destroy', $order) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus pesanan ini?')">
                         @csrf

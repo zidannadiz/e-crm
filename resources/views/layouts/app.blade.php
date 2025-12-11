@@ -13,6 +13,179 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        
+        <!-- Custom Animations CSS -->
+        <style>
+            /* Fade In Animation */
+            @keyframes fadeIn {
+                from { 
+                    opacity: 0; 
+                }
+                to { 
+                    opacity: 1; 
+                }
+            }
+            
+            /* Slide Up Animation */
+            @keyframes slideUp {
+                from { 
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+                to { 
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            
+            /* Slide In Left */
+            @keyframes slideInLeft {
+                from {
+                    opacity: 0;
+                    transform: translateX(-20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+            
+            /* Slide In Right */
+            @keyframes slideInRight {
+                from {
+                    opacity: 0;
+                    transform: translateX(20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+            
+            /* Pulse Animation */
+            @keyframes pulse {
+                0%, 100% { 
+                    transform: scale(1); 
+                }
+                50% { 
+                    transform: scale(1.05); 
+                }
+            }
+            
+            /* Shake Animation */
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                25% { transform: translateX(-5px); }
+                75% { transform: translateX(5px); }
+            }
+            
+            /* Bounce In */
+            @keyframes bounceIn {
+                0% {
+                    opacity: 0;
+                    transform: scale(0.3);
+                }
+                50% {
+                    opacity: 1;
+                    transform: scale(1.05);
+                }
+                70% {
+                    transform: scale(0.9);
+                }
+                100% {
+                    transform: scale(1);
+                }
+            }
+            
+            /* Utility Classes */
+            .animate-fade-in {
+                animation: fadeIn 0.5s ease-in;
+            }
+            
+            .animate-slide-up {
+                animation: slideUp 0.6s ease-out;
+            }
+            
+            .animate-slide-in-left {
+                animation: slideInLeft 0.5s ease-out;
+            }
+            
+            .animate-slide-in-right {
+                animation: slideInRight 0.5s ease-out;
+            }
+            
+            .animate-pulse-slow {
+                animation: pulse 2s ease-in-out infinite;
+            }
+            
+            .animate-shake {
+                animation: shake 0.5s ease-in-out;
+            }
+            
+            .animate-bounce-in {
+                animation: bounceIn 0.6s ease-out;
+            }
+            
+            /* Stagger delay untuk cards */
+            .delay-100 { 
+                animation-delay: 0.1s; 
+                opacity: 0;
+                animation-fill-mode: forwards;
+            }
+            .delay-200 { 
+                animation-delay: 0.2s; 
+                opacity: 0;
+                animation-fill-mode: forwards;
+            }
+            .delay-300 { 
+                animation-delay: 0.3s; 
+                opacity: 0;
+                animation-fill-mode: forwards;
+            }
+            .delay-400 { 
+                animation-delay: 0.4s; 
+                opacity: 0;
+                animation-fill-mode: forwards;
+            }
+            
+            /* Smooth transitions untuk hover effects */
+            .transition-smooth {
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+            
+            /* Table row hover effect */
+            .table-row-hover {
+                transition: background-color 0.2s ease, transform 0.2s ease;
+            }
+            
+            .table-row-hover:hover {
+                transform: translateX(4px);
+            }
+            
+            /* Button ripple effect */
+            .ripple {
+                position: relative;
+                overflow: hidden;
+            }
+            
+            .ripple::after {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: 0;
+                height: 0;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.5);
+                transform: translate(-50%, -50%);
+                transition: width 0.6s, height 0.6s;
+            }
+            
+            .ripple:active::after {
+                width: 300px;
+                height: 300px;
+            }
+        </style>
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">

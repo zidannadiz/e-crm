@@ -4,10 +4,10 @@
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex justify-between items-center mb-6">
+    <div class="flex justify-between items-center mb-6 animate-fade-in">
         <h1 class="text-3xl font-bold">Faktur</h1>
         @if(Auth::user()->role === 'admin')
-        <a href="{{ route('ecrm.invoices.create') }}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+        <a href="{{ route('ecrm.invoices.create') }}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-all duration-200 hover:scale-105 active:scale-95 ripple">
             + Buat Faktur
         </a>
         @endif
@@ -27,8 +27,8 @@
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-                @forelse($invoices as $invoice)
-                    <tr>
+                @forelse($invoices as $index => $invoice)
+                    <tr class="table-row-hover animate-slide-in-left hover:bg-gray-50 transition-all duration-200" style="animation-delay: {{ $index * 0.05 }}s; opacity: 0; animation-fill-mode: forwards;">
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="font-medium">{{ $invoice->nomor_invoice }}</div>
                             <div class="text-sm text-gray-500">{{ $invoice->tanggal_invoice->format('d M Y') }}</div>
@@ -44,7 +44,7 @@
                             @endif
                         </td>
                         <td class="px-6 py-4">
-                            <span class="px-2 py-1 text-xs rounded {{ 
+                            <span class="px-2 py-1 text-xs rounded transition-all duration-200 hover:scale-110 {{ 
                                 $invoice->status === 'paid' ? 'bg-green-100 text-green-800' : 
                                 ($invoice->status === 'overdue' ? 'bg-red-100 text-red-800' : 
                                 ($invoice->status === 'sent' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800')) 
@@ -59,16 +59,16 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             <div class="flex items-center gap-2 flex-wrap">
-                                <a href="{{ route('ecrm.invoices.show', $invoice) }}" class="text-blue-600 hover:text-blue-900">Lihat</a>
+                                <a href="{{ route('ecrm.invoices.show', $invoice) }}" class="text-blue-600 hover:text-blue-900 transition-all duration-200 hover:scale-110">Lihat</a>
                                 @if(Auth::user()->role === 'admin')
                                 <span class="text-gray-300">|</span>
-                                <a href="{{ route('ecrm.invoices.edit', $invoice) }}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
+                                <a href="{{ route('ecrm.invoices.edit', $invoice) }}" class="text-indigo-600 hover:text-indigo-900 transition-all duration-200 hover:scale-110">Ubah</a>
                                 @endif
                                 @if((Auth::user()->role === 'cs' || Auth::user()->role === 'admin') && $invoice->status !== 'paid')
                                 <span class="text-gray-300">|</span>
                                 <button type="button" 
                                         onclick="openRemindModal('{{ route('ecrm.invoices.remind', $invoice) }}', '{{ $invoice->nomor_invoice }}')"
-                                        class="text-orange-600 hover:text-orange-900">
+                                        class="text-orange-600 hover:text-orange-900 transition-all duration-200 hover:scale-110">
                                     Kirim Reminder
                                 </button>
                                 @endif
@@ -77,7 +77,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" class="px-6 py-4 text-center text-gray-500">Tidak ada data invoice</td>
+                        <td colspan="7" class="px-6 py-4 text-center text-gray-500 animate-fade-in">Tidak ada data invoice</td>
                     </tr>
                 @endforelse
             </tbody>

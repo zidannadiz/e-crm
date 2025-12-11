@@ -4,9 +4,9 @@
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex justify-between items-center mb-6">
+    <div class="flex justify-between items-center mb-6 animate-fade-in">
         <h1 class="text-3xl font-bold">Balasan Cepat</h1>
-        <a href="{{ route('ecrm.quick-replies.create') }}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+        <a href="{{ route('ecrm.quick-replies.create') }}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-all duration-200 hover:scale-105 active:scale-95 ripple">
             + Tambah Balasan Cepat
         </a>
     </div>
@@ -23,8 +23,8 @@
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-                @forelse($quickReplies as $quickReply)
-                    <tr>
+                @forelse($quickReplies as $index => $quickReply)
+                    <tr class="table-row-hover animate-slide-in-left hover:bg-gray-50 transition-all duration-200" style="animation-delay: {{ $index * 0.05 }}s; opacity: 0; animation-fill-mode: forwards;">
                         <td class="px-6 py-4">
                             <div class="font-medium">{{ $quickReply->pertanyaan }}</div>
                         </td>
@@ -33,25 +33,25 @@
                         </td>
                         <td class="px-6 py-4">{{ $quickReply->kategori ?? '-' }}</td>
                         <td class="px-6 py-4">
-                            <span class="px-2 py-1 text-xs rounded {{ $quickReply->aktif ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
+                            <span class="px-2 py-1 text-xs rounded transition-all duration-200 hover:scale-110 {{ $quickReply->aktif ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
                                 {{ $quickReply->aktif ? 'Aktif' : 'Nonaktif' }}
                             </span>
                             @if($quickReply->use_ai)
-                            <span class="ml-2 px-2 py-1 text-xs rounded bg-purple-100 text-purple-800">AI</span>
+                            <span class="ml-2 px-2 py-1 text-xs rounded bg-purple-100 text-purple-800 transition-all duration-200 hover:scale-110">AI</span>
                             @endif
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <a href="{{ route('ecrm.quick-replies.edit', $quickReply) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">Ubah</a>
+                            <a href="{{ route('ecrm.quick-replies.edit', $quickReply) }}" class="text-indigo-600 hover:text-indigo-900 mr-3 transition-all duration-200 hover:scale-110">Ubah</a>
                             <form action="{{ route('ecrm.quick-replies.destroy', $quickReply) }}" method="POST" class="inline" onsubmit="return confirm('Yakin hapus?')">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="text-red-600 hover:text-red-900">Hapus</button>
+                                <button type="submit" class="text-red-600 hover:text-red-900 transition-all duration-200 hover:scale-110">Hapus</button>
                             </form>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="px-6 py-4 text-center text-gray-500">Tidak ada data quick reply</td>
+                        <td colspan="5" class="px-6 py-4 text-center text-gray-500 animate-fade-in">Tidak ada data balasan cepat</td>
                     </tr>
                 @endforelse
             </tbody>

@@ -5,7 +5,7 @@
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
     {{-- Header --}}
-    <div class="flex justify-between items-center mb-6">
+    <div class="flex justify-between items-center mb-6 animate-fade-in">
         <div>
             <h1 class="text-3xl font-bold text-gray-900">Kotak Masuk Pesan</h1>
             <p class="text-gray-600 mt-1">
@@ -18,7 +18,7 @@
         </div>
         <form method="POST" action="{{ route('ecrm.messages.mark-all-read') }}" class="inline">
             @csrf
-            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-all duration-200 hover:scale-105 active:scale-95 ripple font-medium">
                 <span class="flex items-center gap-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
@@ -31,7 +31,7 @@
 
     {{-- Quick Stats --}}
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border border-blue-200">
+        <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border border-blue-200 animate-slide-up delay-100 hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm font-medium text-blue-600">Total Percakapan</p>
@@ -45,7 +45,7 @@
             </div>
         </div>
 
-        <div class="bg-gradient-to-br from-red-50 to-red-100 rounded-xl p-6 border border-red-200">
+        <div class="bg-gradient-to-br from-red-50 to-red-100 rounded-xl p-6 border border-red-200 animate-slide-up delay-200 hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm font-medium text-red-600">Pesan Belum Dibaca</p>
@@ -59,7 +59,7 @@
             </div>
         </div>
 
-        <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 border border-green-200">
+        <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 border border-green-200 animate-slide-up delay-300 hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm font-medium text-green-600">Pesan Hari Ini</p>
@@ -75,26 +75,26 @@
     </div>
 
     {{-- Filter --}}
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-6 p-4">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-6 p-4 animate-slide-up">
         <form method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4">
             <input 
                 type="text" 
                 name="search" 
                 value="{{ request('search') }}" 
                 placeholder="Cari order, client, pesan..." 
-                class="col-span-2 border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                class="col-span-2 border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 focus:scale-105">
             
-            <select name="status" class="bg-white border-2 border-gray-300 rounded-lg px-4 py-2.5 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-400 transition-colors duration-200 cursor-pointer shadow-sm">
+            <select name="status" class="bg-white border-2 border-gray-300 rounded-lg px-4 py-2.5 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-400 transition-all duration-200 cursor-pointer shadow-sm focus:scale-105">
                 <option value="">Semua Status</option>
                 <option value="unread" {{ request('status') == 'unread' ? 'selected' : '' }}>Belum Dibaca</option>
                 <option value="read" {{ request('status') == 'read' ? 'selected' : '' }}>Sudah Dibaca</option>
             </select>
             
             <div class="flex gap-2">
-                <button type="submit" class="flex-1 bg-blue-600 text-white px-4 py-2.5 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                <button type="submit" class="flex-1 bg-blue-600 text-white px-4 py-2.5 rounded-lg hover:bg-blue-700 transition-all duration-200 hover:scale-105 active:scale-95 ripple font-medium">
                     Cari
                 </button>
-                <a href="{{ route('ecrm.messages.inbox') }}" class="bg-gray-100 text-gray-700 px-4 py-2.5 rounded-lg hover:bg-gray-200 transition-colors">
+                <a href="{{ route('ecrm.messages.inbox') }}" class="bg-gray-100 text-gray-700 px-4 py-2.5 rounded-lg hover:bg-gray-200 transition-all duration-200 hover:scale-105 active:scale-95">
                     Reset
                 </a>
             </div>
@@ -104,13 +104,14 @@
     {{-- Conversations List --}}
     <div class="bg-white rounded-xl shadow-sm border border-gray-200">
         <div class="divide-y divide-gray-200">
-            @forelse($orders as $order)
+            @forelse($orders as $index => $order)
                 @php
                     $hasUnread = $order->unread_count > 0;
                     $lastMessage = $order->last_message;
                 @endphp
                 <a href="{{ route('ecrm.chat.index', $order) }}" 
-                   class="block p-6 hover:bg-gray-50 transition-colors {{ $hasUnread ? 'bg-blue-50' : '' }}">
+                   class="block p-6 hover:bg-gray-50 transition-all duration-200 animate-slide-in-left {{ $hasUnread ? 'bg-blue-50' : '' }}" 
+                   style="animation-delay: {{ $index * 0.05 }}s; opacity: 0; animation-fill-mode: forwards;">
                     <div class="flex items-start justify-between gap-4">
                         <div class="flex-1">
                             <div class="flex items-center gap-3 mb-2">

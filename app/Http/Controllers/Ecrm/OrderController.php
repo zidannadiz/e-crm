@@ -237,7 +237,6 @@ class OrderController extends Controller
         } else {
             // Admin can update all fields
             $validated = $request->validate([
-                'status' => 'required|in:pending,approved,in_progress,review,completed,cancelled',
                 'produk_status' => 'required|in:pending,proses,selesai',
                 'budget' => 'nullable|numeric|min:0',
                 'deadline' => 'nullable|date',
@@ -322,20 +321,14 @@ class OrderController extends Controller
         }
 
         $validated = $request->validate([
-            'status' => 'required|in:pending,approved,in_progress,review,completed,cancelled',
-            'produk_status' => 'nullable|in:pending,proses,selesai',
+            'produk_status' => 'required|in:pending,proses,selesai',
             'catatan_admin' => 'nullable|string',
         ]);
-
-        // CS can only update status and catatan_admin, not produk_status
-        if (Auth::user()->role === 'cs') {
-            unset($validated['produk_status']);
-        }
 
         $order->update($validated);
 
         return redirect()->route('ecrm.orders.show', $order)
-            ->with('success', 'Status pesanan berhasil diperbarui');
+            ->with('success', 'Status produk berhasil diperbarui');
     }
 
     public function destroy(Order $order)

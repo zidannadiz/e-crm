@@ -38,12 +38,12 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Status *</label>
                     <select name="status" required class="w-full border rounded px-4 py-2">
-                        <option value="new" {{ old('status') == 'new' ? 'selected' : '' }}>New</option>
-                        <option value="contacted" {{ old('status') == 'contacted' ? 'selected' : '' }}>Contacted</option>
-                        <option value="qualified" {{ old('status') == 'qualified' ? 'selected' : '' }}>Qualified</option>
-                        <option value="quotation" {{ old('status') == 'quotation' ? 'selected' : '' }}>Quotation</option>
-                        <option value="converted" {{ old('status') == 'converted' ? 'selected' : '' }}>Converted</option>
-                        <option value="lost" {{ old('status') == 'lost' ? 'selected' : '' }}>Lost</option>
+                        <option value="new" {{ old('status') == 'new' ? 'selected' : '' }}>Baru</option>
+                        <option value="contacted" {{ old('status') == 'contacted' ? 'selected' : '' }}>Dihubungi</option>
+                        <option value="qualified" {{ old('status') == 'qualified' ? 'selected' : '' }}>Terkualifikasi</option>
+                        <option value="quotation" {{ old('status') == 'quotation' ? 'selected' : '' }}>Penawaran</option>
+                        <option value="converted" {{ old('status') == 'converted' ? 'selected' : '' }}>Terkonversi</option>
+                        <option value="lost" {{ old('status') == 'lost' ? 'selected' : '' }}>Hilang</option>
                     </select>
                     @error('status') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
@@ -62,7 +62,7 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Estimated Value</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Nilai Perkiraan</label>
                     <input type="number" name="estimated_value" value="{{ old('estimated_value') }}" step="0.01" class="w-full border rounded px-4 py-2">
                     @error('estimated_value') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>

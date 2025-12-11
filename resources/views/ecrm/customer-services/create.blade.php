@@ -1,17 +1,17 @@
 @extends('layouts.app')
 
-@section('title', 'Tambah Customer Service - e-CRM')
+@section('title', 'Tambah Layanan Pelanggan - e-CRM')
 
 @section('content')
 <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold">Tambah Customer Service</h1>
-        <a href="{{ route('ecrm.customer-services.index') }}" class="text-gray-600 hover:text-gray-900">
+    <div class="flex justify-between items-center mb-6 animate-fade-in">
+        <h1 class="text-3xl font-bold">Tambah Layanan Pelanggan</h1>
+        <a href="{{ route('ecrm.customer-services.index') }}" class="text-gray-600 hover:text-gray-900 transition-all duration-200 hover:scale-110">
             ← Kembali
         </a>
     </div>
 
-    <div class="bg-white rounded-lg shadow p-6">
+    <div class="bg-white rounded-lg shadow p-6 animate-slide-up">
         <form action="{{ route('ecrm.customer-services.store') }}" method="POST">
             @csrf
 
@@ -23,8 +23,8 @@
                            name="name" 
                            value="{{ old('name') }}" 
                            required 
-                           class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('name') border-red-500 @enderror"
-                           placeholder="Nama lengkap Customer Service">
+                           class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 focus:scale-105 @error('name') border-red-500 @enderror"
+                           placeholder="Nama lengkap Layanan Pelanggan">
                     @error('name')
                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                     @enderror
@@ -37,7 +37,7 @@
                            name="email" 
                            value="{{ old('email') }}" 
                            required 
-                           class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('email') border-red-500 @enderror"
+                           class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 focus:scale-105 @error('email') border-red-500 @enderror"
                            placeholder="email@example.com">
                     @error('email')
                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
@@ -50,7 +50,7 @@
                            id="password"
                            name="password" 
                            required 
-                           class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('password') border-red-500 @enderror"
+                           class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 focus:scale-105 @error('password') border-red-500 @enderror"
                            placeholder="Minimal 8 karakter">
                     @error('password')
                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
@@ -69,13 +69,13 @@
 
                 <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
                     <p class="text-sm text-blue-800">
-                        <strong>Info:</strong> Customer Service akan dapat mengakses dashboard, mengelola pesanan, klien, dan pesan dari customer.
+                        <strong>Info:</strong> Layanan Pelanggan akan dapat mengakses dashboard, mengelola pesanan, klien, dan pesan dari pelanggan.
                     </p>
                 </div>
             </div>
 
             <div class="mt-6 flex gap-4">
-                <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-all duration-200 hover:scale-105 active:scale-95 ripple font-medium">
                     Simpan
                 </button>
                 <a href="{{ route('ecrm.customer-services.index') }}" class="bg-gray-300 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-400 transition-colors">

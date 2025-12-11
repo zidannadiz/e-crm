@@ -10,7 +10,6 @@ use App\Models\Ecrm\QuickReply;
 use App\Services\ChatLoadBalancerService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Http;
 
 class ChatController extends Controller
 {
@@ -45,9 +44,13 @@ class ChatController extends Controller
             ->latest()
             ->paginate(50);
 
-        $quickReplies = QuickReply::where('aktif', true)
-            ->orderBy('order')
-            ->get();
+        // Only load quick replies for admin and client (not CS)
+        $quickReplies = collect([]);
+        if (in_array(Auth::user()->role, ['admin', 'client'])) {
+            $quickReplies = QuickReply::where('aktif', true)
+                ->orderBy('order')
+                ->get();
+        }
 
         // Mark messages as read
         ChatMessage::where('order_id', $order->id)
@@ -77,7 +80,6 @@ class ChatController extends Controller
                             'role' => $msg->user->role,
                             'pesan' => $msg->pesan,
                             'created_at' => $msg->created_at->format('d M Y, H:i'),
-                            'is_ai_generated' => $msg->is_ai_generated,
                             'quick_reply' => $msg->quickReply ? $msg->quickReply->pertanyaan : null,
                         ];
                     }) : []
@@ -146,75 +148,6 @@ class ChatController extends Controller
             ->with('success', 'Pesan berhasil dikirim');
     }
 
-    public function aiAnswer(Request $request, Order $order)
-    {
-        // Check access
-        if (Auth::user()->role === 'client' && $order->user_id !== Auth::id()) {
-            abort(403);
-        }
-
-        $validated = $request->validate([
-            'pertanyaan' => 'required|string',
-        ]);
-
-        $aiResponse = $this->generateAIResponse($validated['pertanyaan'], $order);
-
-        ChatMessage::create([
-            'order_id' => $order->id,
-            'user_id' => Auth::id(),
-            'pesan' => $aiResponse,
-            'is_ai_generated' => true,
-            'is_read' => false,
-        ]);
-
-        return redirect()->back()
-            ->with('success', 'Jawaban AI berhasil dikirim');
-    }
-
-    private function generateAIResponse(string $pertanyaan, Order $order): string
-    {
-        try {
-            // Setup Gemini API
-            $apiKey = env('GEMINI_API_KEY');
-            
-            if (!$apiKey) {
-                return "Maaf, fitur AI belum dikonfigurasi. Silakan hubungi admin.";
-            }
-
-            // Context tentang order
-            $context = "Anda adalah asisten untuk jasa desain. ";
-            $context .= "Client memesan: {$order->jenis_desain}. ";
-            $context .= "Deskripsi: {$order->deskripsi}. ";
-            if ($order->kebutuhan) {
-                $context .= "Kebutuhan: {$order->kebutuhan}. ";
-            }
-            $context .= "Jawab pertanyaan dengan ramah dan profesional dalam bahasa Indonesia.";
-
-            // Call Gemini API
-            $response = Http::post("https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={$apiKey}", [
-                'contents' => [
-                    [
-                        'parts' => [
-                            [
-                                'text' => $context . "\n\nPertanyaan: " . $pertanyaan
-                            ]
-                        ]
-                    ]
-                ]
-            ]);
-
-            $data = $response->json();
-            
-            if (isset($data['candidates'][0]['content']['parts'][0]['text'])) {
-                return $data['candidates'][0]['content']['parts'][0]['text'];
-            }
-
-            return "Maaf, terjadi kesalahan saat memproses pertanyaan. Silakan coba lagi.";
-        } catch (\Exception $e) {
-            \Log::error('Gemini API Error: ' . $e->getMessage());
-            return "Maaf, terjadi kesalahan saat menghubungi AI. Silakan coba lagi atau hubungi admin.";
-        }
-    }
 
     public function markRead(ChatMessage $message)
     {

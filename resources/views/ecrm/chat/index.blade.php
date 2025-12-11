@@ -6,7 +6,7 @@
 <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
     <div class="bg-white rounded-lg shadow-lg overflow-hidden">
         <!-- Header -->
-        <div class="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-6">
+        <div class="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-6 animate-fade-in">
             <div class="flex justify-between items-start">
                 <div class="flex-1">
                     <h1 class="text-2xl font-bold mb-2">Chat Pesanan</h1>
@@ -27,7 +27,7 @@
                         </div>
                     </div>
                 </div>
-                <a href="{{ route('ecrm.orders.show', $order) }}" class="bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-4 py-2 rounded-lg transition-colors">
+                <a href="{{ route('ecrm.orders.show', $order) }}" class="bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-4 py-2 rounded-lg transition-all duration-200 hover:scale-105 active:scale-95">
                     ← Kembali ke Pesanan
                 </a>
             </div>
@@ -35,12 +35,12 @@
 
         <!-- Chat Messages Container -->
         <div id="chat-messages" class="h-[500px] overflow-y-auto p-6 bg-gray-50 space-y-4">
-            @forelse($messages->reverse() as $message)
-                <div class="flex {{ $message->user_id === Auth::id() ? 'justify-end' : 'justify-start' }}">
+            @forelse($messages->reverse() as $index => $message)
+                <div class="flex {{ $message->user_id === Auth::id() ? 'justify-end' : 'justify-start' }} animate-slide-in-{{ $message->user_id === Auth::id() ? 'right' : 'left' }}" style="animation-delay: {{ $index * 0.05 }}s; opacity: 0; animation-fill-mode: forwards;">
                     <div class="flex gap-3 max-w-2xl {{ $message->user_id === Auth::id() ? 'flex-row-reverse' : '' }}">
                         <!-- Avatar -->
                         <div class="flex-shrink-0">
-                            <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold text-sm
+                            <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold text-sm transition-all duration-200 hover:scale-110
                                 {{ $message->user->role === 'admin' ? 'bg-red-500' : 
                                    ($message->user->role === 'cs' ? 'bg-green-500' : 'bg-blue-500') }}">
                                 {{ strtoupper(substr($message->user->name, 0, 1)) }}
@@ -55,17 +55,14 @@
                                 </span>
                                 <span class="text-xs text-gray-500">
                                     {{ $message->user->role === 'admin' ? 'Admin' : 
-                                       ($message->user->role === 'cs' ? 'CS' : 'Client') }}
+                                       ($message->user->role === 'cs' ? 'CS' : 'Klien') }}
                                 </span>
-                                @if($message->is_ai_generated)
-                                    <span class="text-xs bg-purple-500 text-white px-2 py-0.5 rounded">AI</span>
-                                @endif
                                 @if($message->quickReply)
-                                    <span class="text-xs bg-green-500 text-white px-2 py-0.5 rounded">Balasan Cepat</span>
+                                    <span class="text-xs bg-green-500 text-white px-2 py-0.5 rounded transition-all duration-200 hover:scale-110">Balasan Cepat</span>
                                 @endif
                             </div>
                             
-                            <div class="rounded-lg px-4 py-3 shadow-sm
+                            <div class="rounded-lg px-4 py-3 shadow-sm transition-all duration-200 hover:shadow-md
                                 {{ $message->user_id === Auth::id() ? 'bg-blue-600 text-white' : 'bg-white text-gray-800 border border-gray-200' }}">
                                 <p class="text-sm whitespace-pre-wrap leading-relaxed">{{ $message->pesan }}</p>
                             </div>
@@ -87,8 +84,8 @@
             @endforelse
         </div>
 
-        <!-- Quick Replies (for CS and Admin) -->
-        @if(in_array(Auth::user()->role, ['admin', 'cs']) && $quickReplies->count() > 0)
+        <!-- Quick Replies (for Admin only) -->
+        @if(Auth::user()->role === 'admin' && $quickReplies->count() > 0)
         <div class="p-4 bg-gray-50 border-t border-gray-200">
             <h3 class="text-sm font-semibold text-gray-700 mb-3">Balasan Cepat:</h3>
             <div class="flex flex-wrap gap-2">
@@ -96,7 +93,7 @@
                     <form action="{{ route('ecrm.chat.quick-reply', $order) }}" method="POST" class="inline">
                         @csrf
                         <input type="hidden" name="quick_reply_id" value="{{ $quickReply->id }}">
-                        <button type="submit" class="bg-white border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-sm hover:bg-gray-100 transition-colors">
+                        <button type="submit" class="bg-white border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-sm hover:bg-gray-100 transition-all duration-200 hover:scale-105 active:scale-95">
                             {{ $quickReply->pertanyaan }}
                         </button>
                     </form>
@@ -114,26 +111,12 @@
                     <form action="{{ route('ecrm.chat.quick-reply', $order) }}" method="POST" class="inline">
                         @csrf
                         <input type="hidden" name="quick_reply_id" value="{{ $quickReply->id }}">
-                        <button type="submit" class="bg-white border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-sm hover:bg-gray-100 transition-colors">
+                        <button type="submit" class="bg-white border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-sm hover:bg-gray-100 transition-all duration-200 hover:scale-105 active:scale-95">
                             {{ $quickReply->pertanyaan }}
                         </button>
                     </form>
                 @endforeach
             </div>
-        </div>
-        @endif
-
-        <!-- AI Answer (for Client) -->
-        @if(Auth::user()->role === 'client')
-        <div class="p-4 bg-purple-50 border-t border-gray-200">
-            <form action="{{ route('ecrm.chat.ai-answer', $order) }}" method="POST" class="flex gap-2">
-                @csrf
-                <input type="text" name="pertanyaan" placeholder="Tanyakan sesuatu tentang project ini..." class="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 focus:border-purple-500" required>
-                <button type="submit" class="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors font-medium">
-                    🤖 Tanya AI
-                </button>
-            </form>
-            <p class="text-xs text-gray-600 mt-2">AI akan menjawab berdasarkan konteks project Anda</p>
         </div>
         @endif
 
@@ -146,9 +129,9 @@
                     name="pesan" 
                     rows="2" 
                     placeholder="Tulis pesan..." 
-                    class="flex-1 border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none" 
+                    class="flex-1 border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none transition-all duration-200 focus:scale-105" 
                     required></textarea>
-                <button type="submit" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center gap-2">
+                <button type="submit" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-all duration-200 hover:scale-105 active:scale-95 ripple font-medium flex items-center gap-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
                     </svg>
